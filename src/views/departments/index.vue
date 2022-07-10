@@ -51,10 +51,7 @@ export default {
         label: "name",
         children: "children",
       },
-      company: {
-        name: "韦恩科技股份有限公司",
-        manager: "负责人",
-      },
+      company: {},
       showDialog: false, //默认不显示弹层
       node: null, //记录当前点击的node节点
     };
@@ -65,7 +62,11 @@ export default {
   methods: {
     async getDepartments() {
       let result = await reqDepartments();
-      this.company = { name: result.companyName, manager: "负责人", id: "" };
+      this.company = {
+        name: "韦恩科技股份有限公司",
+        manager: "负责人",
+        id: "",
+      };
       this.departs = tranListToTreeData(result.depts, ""); //需要将其转化为树形结构
     },
     //监听tree-tools中触发的点击添加子部门的事件
