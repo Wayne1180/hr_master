@@ -34,6 +34,23 @@
           sortable=""
           prop="username"
         ></el-table-column>
+        <el-table-column width="120px" label="头像" align="center">
+          <!-- 插槽 -->
+          <template v-slot="{ row }">
+            <img
+              @click="showQrCode(row.staffPhoto)"
+              v-imagerror="require('@/assets/common/QQ.jpg')"
+              :src="row.staffPhoto"
+              alt=""
+              style="
+                border-radius: 50%;
+                width: 100px;
+                height: 100px;
+                padding: 10px;
+              "
+            />
+          </template>
+        </el-table-column>
         <el-table-column
           label="工号"
           sortable=""
@@ -105,6 +122,11 @@
     <!-- 放置组件弹层 -->
     <!-- sync修饰符是子组件去改变父组件数据的一个语法糖 -->
     <AddEmployee :showDialog.sync="showDialog" />
+    <el-dialog title="二维码" :visible.sync="showCodeDialog">
+      <el-row type="flex" justify="center">
+        <canvas ref="myCanvas"></canvas>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
@@ -113,6 +135,7 @@ import { reqEmployeeList, reqDelEmployee } from "@/api/employees";
 import EmployeeEnum from "@/api/constant/employees"; //引入员工的枚举对象
 import AddEmployee from "./components/add-employee.vue";
 import { formatDate } from "@/filters";
+import QrCode from "qrcode";
 export default {
   components: { AddEmployee },
   data() {
@@ -125,6 +148,7 @@ export default {
       },
       loading: false, //显示遮罩层
       showDialog: false, //默认是关闭的弹层
+      showCodeDialog: false, //显示二维码弹层
     };
   },
   methods: {
@@ -218,6 +242,17 @@ export default {
       // return rows.map((item) =>
       //   Object.keys(headers).map((key) => item[headers[key]])
       // );
+    },
+    showQrCode(url) {
+      //url存在的情况下才弹出层，否则不弹
+      if (url) {
+        this.showCodeDialog = true; //数据更新了，但是我的弹层不会立刻出现  页面的渲染是异步的
+        this.$nextTick(() => {
+          QrCode.toCanvas(this.$refs.myCanvas, url); // 将地址转化成二维码链接
+        });
+      } else {
+        this.$message.warning("该用户还未上传头像");
+      }
     },
   },
   created() {
