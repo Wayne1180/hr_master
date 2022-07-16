@@ -17,7 +17,11 @@
           <el-button size="small" type="danger" @click="exportData"
             >Excel导出</el-button
           >
-          <el-button size="small" type="primary" @click="showDialog = true"
+          <el-button
+            size="small"
+            type="primary"
+            @click="showDialog = true"
+            v-if="checkPermission('POINT_USER_ADD')"
             >新增员工</el-button
           >
         </template>
@@ -100,7 +104,9 @@
             <el-button type="text" size="small">转正</el-button>
             <el-button type="text" size="small">调岗</el-button>
             <el-button type="text" size="small">离职</el-button>
-            <el-button type="text" size="small">角色</el-button>
+            <el-button type="text" size="small" @click="editRole(row.id)"
+              >角色</el-button
+            >
             <el-button type="text" size="small" @click="delEmployee(row.id)"
               >删除</el-button
             >
@@ -127,6 +133,12 @@
         <canvas ref="myCanvas"></canvas>
       </el-row>
     </el-dialog>
+    <!-- 放置分配组件 -->
+    <assign-role
+      :showRoleDialog.sync="showRoleDialog"
+      :user-id="userId"
+      ref="assignRole"
+    />
   </div>
 </template>
 
@@ -135,9 +147,10 @@ import { reqEmployeeList, reqDelEmployee } from "@/api/employees";
 import EmployeeEnum from "@/api/constant/employees"; //引入员工的枚举对象
 import AddEmployee from "./components/add-employee.vue";
 import { formatDate } from "@/filters";
+import AssignRole from "./components/assign-role.vue";
 import QrCode from "qrcode";
 export default {
-  components: { AddEmployee },
+  components: { AddEmployee, AssignRole },
   data() {
     return {
       list: [], //接收数组
@@ -149,6 +162,8 @@ export default {
       loading: false, //显示遮罩层
       showDialog: false, //默认是关闭的弹层
       showCodeDialog: false, //显示二维码弹层
+      showRoleDialog: false, //显示分配角色的弹层
+      userId: null, //定义一个userId
     };
   },
   methods: {
@@ -253,6 +268,12 @@ export default {
       } else {
         this.$message.warning("该用户还未上传头像");
       }
+    },
+    async editRole(id) {
+      //弹出层
+      this.userId = id;
+      await this.$refs.assignRole.getUserDetailById(id); //会调用子组件方法
+      this.showRoleDialog = true;
     },
   },
   created() {
