@@ -10,6 +10,7 @@ import permission from '@/router/modules/permission'
 import salarys from '@/router/modules/salarys'
 import setting from '@/router/modules/setting'
 import social from '@/router/modules/social'
+import userRouter from './modules/user'
 
 Vue.use(Router)
 
@@ -72,8 +73,8 @@ export const constantRoutes = [
       path: '', //什么都不写表示默认的二级路由
       component: () => import('@/views/import')
     }]
-
   },
+  userRouter //放置一个都可以访问的路由
 
 ]
 
