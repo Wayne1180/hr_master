@@ -10,6 +10,7 @@ export default {
         path: '',//这里不用写 什么都不用写表示/employees 不但有布局layout => 员工主页
         component: () => import('@/views/employees'),
         //路由元信息  其实就是一个存储数据的地方，可以放任何内容
+        name: 'employees',
         meta: {
             title: '员工管理',
             icon: 'people'
